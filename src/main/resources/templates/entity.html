@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <!--        Bootstrap and jquery -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+            crossorigin="anonymous"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/style.css}"/>
+    <!--        Bootstrap and jquery -->
+    <meta charset="UTF-8">
+    <title>Информация об объекте</title>
+</head>
+<body>
+<!--NAVBAR-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+        <!--        OFFCANVAS TRIGGER-->
+        <button class="navbar-toggler me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
+                aria-controls="offcanvasExample">
+            <span class="navbar-toggler-icon" data-bs-target="#offcanvasExample"></span>
+        </button>
+        <!--        OFFCANVAS TRIGGER-->
+        <a class="navbar-brand fw-bold text-uppercase me-auto" href="/">Guide Vologda</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <form class="d-flex ms-auto ">
+                <div class="input-group my-1 mb-lg-0">
+                    <input type="text" class="form-control" placeholder="Поиск..."
+                           aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <button class="btn btn-primary" type="button" id="button-addon2"><i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <span th:inline="text">[[${#httpServletRequest.remoteUser}]]</span>
+                        <span><i class="bi bi-person-fill"></i></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" th:href="@{/profile}">Профиль</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a href="#" class="dropdown-item" th:href="@{/logout}">Выход</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--NAVBAR-->
+<!--OFFCANVAS-->
+<div class="offcanvas offcanvas-start bg-dark text-white sidebar-nav" tabindex="-1" id="offcanvasExample"
+     aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-body p-0">
+        <nav class="navbar-dark">
+            <ul class="navbar-nav">
+                <li>
+                    <div class="text-muted small fw-bold text-uppercase px-3">
+                        ОСНОВНОЕ
+                    </div>
+                </li>
+                <li>
+                    <a href="/" class="nav-link px-3 active">
+                        <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                        <span>Панель управления</span>
+                    </a>
+                </li>
+                <li class="my-4">
+                    <hr class="dropdown-divider"/>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                    <div class="text-muted small fw-bold text-uppercase px-3">
+                        АДМИНИСТРИРОВАНИЕ
+                    </div>
+                </li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#collapseAdmin" role="button"
+                       aria-expanded="false" aria-controls="collapseAdmin">
+                        <span class="me-2"><i class="bi bi-people"></i></span>
+                        <span>Пользователи</span>
+                        <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
+                    </a>
+                    <div class="collapse" id="collapseAdmin">
+                        <div>
+                            <ul class="navbar-nav ps-3">
+                                <li>
+                                    <a th:href="@{/admin/users}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-list"></i></span>
+                                        <span>Список</span>
+                                    </a>
+                                </li>
+<!--                                <li>-->
+<!--                                    <a href="#" class="nav-link px-3">-->
+<!--                                        <span class="me-2"><i class="bi bi-question-circle"></i></span>-->
+<!--                                        <span>Заявки на доступ</span>-->
+<!--                                    </a>-->
+<!--                                </li>-->
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="my-4" sec:authorize="hasRole('ROLE_ADMIN')">
+                    <hr class="dropdown-divider"/>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                    <div class="text-muted small fw-bold text-uppercase px-3">
+                        РЕДАКТИРОВАНИЕ
+                    </div>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                    <a aria-controls="collapseHomeEntity" aria-expanded="false" class="nav-link px-3 sidebar-link"
+                       data-bs-toggle="collapse"
+                       href="#collapseHomeEntity" role="button">
+                        <span class="me-2"><i class="bi bi-house"></i></span>
+                        <span>Объект на главном экране</span>
+                        <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
+                    </a>
+                    <div class="collapse" id="collapseHomeEntity">
+                        <div>
+                            <ul class="navbar-nav ps-3">
+                                <li>
+                                    <a class="nav-link px-3" th:href="@{/homeentity}">
+                                        <span class="me-2"><i class="bi bi-info-square"></i></span>
+                                        <span>Информация</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#collapseCafes" role="button"
+                       aria-expanded="false" aria-controls="collapseCafes">
+                        <span class="me-2"><i class="bi bi-bezier2"></i></span>
+                        <span>Типы объектов</span>
+                        <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
+                    </a>
+                    <div class="collapse" id="collapseCafes">
+                        <div>
+                            <ul class="navbar-nav ps-3">
+                                <li>
+                                    <a th:href="@{/typesofentities/new}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-plus-circle"></i></span>
+                                        <span>Добавить</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/typesofentities}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-list"></i></span>
+                                        <span>Список</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#collapseHoles" role="button"
+                       aria-expanded="false" aria-controls="collapseHoles">
+                        <span class="me-2"><i class="bi bi-geo-alt"></i></span>
+                        <span>Объекты</span>
+                        <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
+                    </a>
+                    <div class="collapse" id="collapseHoles">
+                        <div>
+                            <ul class="navbar-nav ps-3">
+                                <li>
+                                    <a th:href="@{/entities/new}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-plus-circle"></i></span>
+                                        <span>Добавить</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/entities}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-list"></i></span>
+                                        <span>Список</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#collapseStreets"
+                       role="button"
+                       aria-expanded="false" aria-controls="collapseStreets">
+                        <span class="me-2"><i class="bi bi-map"></i></span>
+                        <span>Улицы</span>
+                        <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
+                    </a>
+                    <div class="collapse" id="collapseStreets">
+                        <div>
+                            <ul class="navbar-nav ps-3">
+                                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                                    <a th:href="@{/streets/new}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-plus-circle"></i></span>
+                                        <span>Добавить</span>
+                                    </a>
+                                </li>
+                                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                                    <a th:href="@{/streets}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-list"></i></span>
+                                        <span>Список</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#collapseTags" role="button"
+                       aria-expanded="false" aria-controls="collapseTags">
+                        <span class="me-2"><i class="bi bi-hash"></i></span>
+                        <span>Теги</span>
+                        <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
+                    </a>
+                    <div class="collapse" id="collapseTags">
+                        <div>
+                            <ul class="navbar-nav ps-3">
+                                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                                    <a th:href="@{/tags/new}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-plus-circle"></i></span>
+                                        <span>Добавить</span>
+                                    </a>
+                                </li>
+                                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                                    <a th:href="@{/tags}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-list"></i></span>
+                                        <span>Список</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                    <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#collapseContactTypes"
+                       role="button"
+                       aria-expanded="false" aria-controls="collapseTouristPlaces">
+                        <span class="me-2"><i class="bi bi-chat-dots"></i></span>
+                        <span>Типы контактов</span>
+                        <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
+                    </a>
+                    <div class="collapse" id="collapseContactTypes">
+                        <div>
+                            <ul class="navbar-nav ps-3">
+                                <li>
+                                    <a th:href="@{/contacttypes/new}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-plus-circle"></i></span>
+                                        <span>Добавить</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a th:href="@{/contacttypes}" class="nav-link px-3">
+                                        <span class="me-2"><i class="bi bi-list"></i></span>
+                                        <span>Список</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li sec:authorize="hasAnyRole('ROLE_EDITOR', 'ROLE_ADMIN')">
+                    <a aria-controls="collapseTouristPlaces" aria-expanded="false" class="nav-link px-3 sidebar-link"
+                       data-bs-toggle="collapse"
+                       href="#collapseTracks" role="button">
+                        <span class="me-2"><i class="bi bi-cursor"></i></span>
+                        <span>Треки</span>
+                        <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
+                    </a>
+                    <div class="collapse" id="collapseTracks">
+                        <div>
+                            <ul class="navbar-nav ps-3">
+                                <li>
+                                    <a class="nav-link px-3" th:href="@{/tracks/new}">
+                                        <span class="me-2"><i class="bi bi-plus-circle"></i></span>
+                                        <span>Добавить</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link px-3" th:href="@{/tracks}">
+                                        <span class="me-2"><i class="bi bi-list"></i></span>
+                                        <span>Список</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+
+            </ul>
+        </nav>
+    </div>
+</div>
+<!--OFFCANVAS-->
+<!--CONTENT-->
+<main class="mt-5 pt-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 dw-bold fs-3">
+                <h2 th:text="${entity.name}"></h2>
+            </div>
+        </div>
+        <form th:object="${entity}">
+            <div class="container mb-3">
+                <h4 class="mb-3">Иноформация об объекте</h4>
+                <p th:text="${errorMessage}"></p>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label" for="carouselExampleControls">Изображения
+                            объекта</label>
+                        <div class="carousel slide" data-bs-ride="carousel" id="carouselExampleControls">
+                            <div class="carousel-inner">
+                                <th:block th:each="image, iStat : ${entity.images}">
+                                    <div class="carousel-item" th:classappend="${iStat.index == 0} ? active : ''">
+                                        <img class="d-block w-100"
+                                             height="500px" th:alt="${image.name}"
+                                             th:src="'https://storage.yandexcloud.net/guidevologda/' + ${image.name}">
+                                    </div>
+                                </th:block>
+                            </div>
+                            <button class="carousel-control-prev" data-bs-slide="prev"
+                                    data-bs-target="#carouselExampleControls" type="button">
+                                <span aria-hidden="true" class="carousel-control-prev-icon"></span>
+                                <span class="visually-hidden">Предыдущий</span>
+                            </button>
+                            <button class="carousel-control-next" data-bs-slide="next"
+                                    data-bs-target="#carouselExampleControls" type="button">
+                                <span aria-hidden="true" class="carousel-control-next-icon"></span>
+                                <span class="visually-hidden">Следующий</span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="form-label">Название</label>
+                            <input th:field="*{name}" id="name" class="form-control" type="text" name="name"
+                                   placeholder="Введите название объекта" disabled/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nameEn" class="form-label">Название на английском</label>
+                            <input th:field="*{nameEn}" id="nameEn" class="form-control" type="text" name="nameEn"
+                                   placeholder="Введите название на английском" disabled/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="typeEntity" class="form-label">Тип объекта</label>
+                            <span class="badge bg-success" id="typeEntity" th:text="*{typeEntity.name}" disabled></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Описание</label>
+                            <textarea class="form-control" id="description" rows="3"
+                                      th:field="*{description}" disabled></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="descriptionEn">Описание на английском</label>
+                            <textarea class="form-control" id="descriptionEn" rows="3"
+                                      th:field="*{descriptionEn}" autocapitalize="" disabled></textarea>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="street" class="form-label">Улица</label>
+                                    <input th:field="*{street.name}" id="street" class="form-control" disabled/>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="houseNumber" class="form-label">Номер дома</label>
+                                    <input th:field="*{houseNumber}" id="houseNumber" class="form-control" type="text"
+                                           name="houseNumber" disabled
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="workSchedule" class="form-label">Расписание</label>
+                            <input id="workSchedule" class="form-control" type="text" name="workSchedule"
+                                   th:field="*{workSchedule}" disabled/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="workScheduleEn" class="form-label">Расписание на английском</label>
+                            <input id="workScheduleEn" class="form-control" type="text" name="workScheduleEn"
+                                   th:field="*{workScheduleEn}" disabled/>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tags" class="form-label">Теги</label>
+                            <div id="tags">
+                                <span class="badge bg-warning text-dark" th:each="tag, iStat : *{tags}"
+                                      th:text="'#' + ${tag.name}"></span>
+                            </div>
+                        </div>
+
+                        <label class="form-label">Доступность</label>
+                        <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                            <div th:switch="*{active}">
+                                <p th:case="true">
+                                    <input id="activeBox" type="checkbox" class="btn-check" autocomplete="off"
+                                           checked disabled>
+                                    <label class="btn btn-sm btn-outline-success" for="activeBox">Активен</label>
+                                </p>
+                                <p th:case="false">
+                                    <input id="nonactiveBox" type="checkbox" class="btn-check" autocomplete="off"
+                                           checked disabled>
+                                    <label class="btn btn-sm btn-outline-danger" for="nonactiveBox">Неактивен</label>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="color: red" th:text="${error}"></p>
+                </div>
+                <a th:href="${'/entities/' + entity.id + '/edit'}" class="btn btn-outline-primary mt-3">Изменить</a>
+                <a class="btn btn-outline-primary mt-3" th:href="${'/entities/' + entity.id + '/images/upload'}">Изменить
+                    изображения</a>
+                <a th:href="${'/entities/' + entity.id + '/contacts'}" class="btn btn-outline-primary mt-3">Контакты</a>
+                <a class="btn btn-outline-danger mt-3" th:href="${'/entities/' + entity.id + '/delete'}">Удалить</a>
+            </div>
+        </form>
+    </div>
+</main>
+<!--CONTENT-->
+</body>
+</html>
